@@ -1,0 +1,11 @@
+Check:
+
+P32 S2
+  - "blank" shows up on data sheet; check number of entries on trial data vs paper record sheets
+
+Unknown Specimens:
+
+EB17002 - B2
+IE17069 - C2 - incorrectly listed in specimens sheet as IE17089
+MR17038 - A1 - actually IE17038
+

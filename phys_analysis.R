@@ -5,9 +5,19 @@ vco2data <- subset(vco2data, vco2data$individual != "IE17169")
 
 plot(vco2data$temperature, vco2data$VCO2_corrected)
 
-
 pairs(vco2data)
-xyplot()
+coplot(VCO2_raw~species | individual, data = vco2data)
+
+M2 <- lm(vco2data$VCO2_raw~vco2data$temperature)
+par(mfrow = c(2,2))
+plot(M2, add.smooth = FALSE)
+par(op)
+
+plot(vco2data$VCO2_raw~vco2data$temperature)
+abline(M2)
+
+
+M1 <- glm(vco2data$VCO2_raw ~ vco2data$temperature + vco2data$individual + vco2data$species + vco2data$sex)
 
 males <- subset(vco2data, vco2data$sex == "male")
 female <- subset(vco2data, vco2data$sex == "female")
@@ -103,32 +113,36 @@ halfem <- subset(hallani, hallani$sex == "female")
 
 par(mfrow=c(1,2))
 
-boxplot(germal$VCO2_corrected~germal$temperature, ylim = c(0,0.00020), main = "Geronimoi Male", col = "orange", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
-boxplot(gerfem$VCO2_corrected~gerfem$temperature, ylim = c(0,0.00020), main = "Geronimoi Female", col = "yellow", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
+boxplot(germal$VCO2_corrected~germal$temperature, ylim = c(0,0.00040), main = "Geronimoi Male", col = "orange", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
+boxplot(gerfem$VCO2_corrected~gerfem$temperature, ylim = c(0,0.00040), main = "Geronimoi Female", col = "yellow", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
 
-boxplot(virmal$VCO2_corrected~virmal$temperature, ylim = c(0,0.00020), main = "Virgulatus Male", col = "dark green", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
-boxplot(virfem$VCO2_corrected~virfem$temperature, ylim = c(0,0.00020), main = "Virgulatus Female", col = "green", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
+boxplot(virmal$VCO2_corrected~virmal$temperature, ylim = c(0,0.00040), main = "Virgulatus Male", col = "dark green", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
+boxplot(virfem$VCO2_corrected~virfem$temperature, ylim = c(0,0.00040), main = "Virgulatus Female", col = "green", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
 
-boxplot(clymal$VCO2_corrected~clymal$temperature, ylim = c(0,0.00020), main = "Clypeatus Male", col = "red", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
-boxplot(clyfem$VCO2_corrected~clyfem$temperature, ylim = c(0,0.00020), main = "Clypeatus Female", col = "pink", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
+boxplot(clymal$VCO2_corrected~clymal$temperature, ylim = c(0,0.00040), main = "Clypeatus Male", col = "red", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
+boxplot(clyfem$VCO2_corrected~clyfem$temperature, ylim = c(0,0.00040), main = "Clypeatus Female", col = "pink", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
 
-boxplot(pugmal$VCO2_corrected~pugmal$temperature, ylim = c(0,0.00020), main = "Pugillis Male", col = "blue", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
-boxplot(pugfem$VCO2_corrected~pugfem$temperature, ylim = c(0,0.00020), main = "Pugillis Female", col = "light blue", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
+boxplot(pugmal$VCO2_corrected~pugmal$temperature, ylim = c(0,0.00040), main = "Pugillis Male", col = "blue", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
+boxplot(pugfem$VCO2_corrected~pugfem$temperature, ylim = c(0,0.00040), main = "Pugillis Female", col = "light blue", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
 
-boxplot(conmal$VCO2_corrected~conmal$temperature, ylim = c(0,0.00020), main = "Conjunctus Male", col = "purple", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
-boxplot(confem$VCO2_corrected~confem$temperature, ylim = c(0,0.00020), main = "Conjunctus Female", col = "lavender", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
+boxplot(conmal$VCO2_corrected~conmal$temperature, ylim = c(0,0.00040), main = "Conjunctus Male", col = "purple", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
+boxplot(confem$VCO2_corrected~confem$temperature, ylim = c(0,0.00040), main = "Conjunctus Female", col = "lavender", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
 
-boxplot(halmal$VCO2_corrected~halmal$temperature, ylim = c(0,0.00020), main = "Hallani Male", col = "magenta", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
-boxplot(halfem$VCO2_corrected~halfem$temperature, ylim = c(0,0.00020), main = "Hallani Female", col = "pink", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
+boxplot(halmal$VCO2_corrected~halmal$temperature, ylim = c(0,0.00040), main = "Hallani Male", col = "magenta", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
+boxplot(halfem$VCO2_corrected~halfem$temperature, ylim = c(0,0.00040), main = "Hallani Female", col = "pink", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
 
 par(mfrow=c(2,3))
 
-boxplot(geronimoi$VCO2_corrected~geronimoi$temperature, ylim = c(0,0.00020), main = "Geronimoi", col = "orange", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
-boxplot(pugillis$VCO2_corrected~pugillis$temperature,ylim = c(0,0.00020), main = "Pugillis", col = "blue", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
-boxplot(clypeatus$VCO2_corrected~clypeatus$temperature,ylim = c(0,0.00020), main = "Clypeatus", col = "red", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
-boxplot(conjunctus$VCO2_corrected~conjunctus$temperature,ylim = c(0,0.00020), main = "Conjunctus", col = "purple", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
-boxplot(hallani$VCO2_corrected~hallani$temperature,ylim = c(0,0.00020), main= "Hallani", col = "pink", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
-boxplot(virgulatus$VCO2_corrected~virgulatus$temperature,ylim = c(0,0.00020), main = "Virgulatus", col = "green", ylab = "mL CO2/min/mg", xlab = "Temperature (C)")
+boxplot(virgulatus$VCO2_corrected~virgulatus$temperature,ylim = c(0,0.00020), main = "Virgulatus", col = "green", ylab = "mL CO2/min/mg", cex.lab =1.5, cex.main =2, cex.axis = 1.4, xlab = expression(paste("Temperature (",degree,"C)")))
+boxplot(conjunctus$VCO2_corrected~conjunctus$temperature,ylim = c(0,0.00020), main = "Conjunctus", col = "purple", ylab = "mL CO2/min/mg", cex.lab =1.5, cex.main =2, cex.axis = 1.4, xlab = expression(paste("Temperature (",degree,"C)")))
+boxplot(hallani$VCO2_corrected~hallani$temperature,ylim = c(0,0.00020), main= "Hallani", col = "pink", ylab = "mL CO2/min/mg", cex.lab =1.5, cex.main =2, cex.axis = 1.4, xlab = expression(paste("Temperature (",degree,"C)")))
+boxplot(clypeatus$VCO2_corrected~clypeatus$temperature,ylim = c(0,0.00020), main = "Clypeatus", col = "red", ylab = "mL CO2/min/mg", cex.lab =1.5, cex.main =2, cex.axis = 1.4, xlab = expression(paste("Temperature (",degree,"C)")))
+boxplot(pugillis$VCO2_corrected~pugillis$temperature,ylim = c(0,0.00020), main = "Pugillis", col = "blue", ylab = "mL CO2/min/mg", cex.lab =1.5, cex.main =2, cex.axis = 1.4, xlab = expression(paste("Temperature (",degree,"C)")))
+boxplot(geronimoi$VCO2_corrected~geronimoi$temperature, ylim = c(0,0.00020), main = "Geronimoi", col = "orange", ylab = "mL CO2/min/mg", cex.lab =1.5, cex.main =2, cex.axis = 1.4, xlab = expression(paste("Temperature (",degree,"C)")))
+
+
+
+
 
 par(mfrow=c(1,1))
 
@@ -157,3 +171,51 @@ rates = c(0, 13, 67)
 rateframe = data.frame(temps, rates) 
 
 box()
+
+ger15 <- subset(geronimoi, geronimoi$temperature == "15")
+ger30 <- subset(geronimoi, geronimoi$temperature == "30")
+gR1 <- mean(ger15$VCO2_raw)
+gR2 <- mean(ger30$VCO2_raw)
+gQ10 <- (gR2/gR1)^(10/15)
+
+pug15 <- subset(pugillis, pugillis$temperature == "15")
+pug30 <- subset(pugillis, pugillis$temperature == "30")
+pR1 <- mean(pug15$VCO2_raw)
+pR2 <- mean(pug30$VCO2_raw)
+pQ10 <- (pR2/pR1)^(10/15)
+
+cly15 <- subset(clypeatus, clypeatus$temperature == "15")
+cly30 <- subset(clypeatus, clypeatus$temperature == "30")
+cR1 <- mean(cly15$VCO2_raw)
+cR2 <- mean(cly30$VCO2_raw)
+cQ10 <- (cR2/cR1)^(10/15)
+
+hal15 <- subset(hallani, hallani$temperature == "15")
+hal30 <- subset(hallani, hallani$temperature == "30")
+hR1 <- mean(hal15$VCO2_raw)
+hR2 <- mean(hal30$VCO2_raw)
+hQ10 <- (hR2/hR1)^(10/15)
+
+con15 <- subset(conjunctus, conjunctus$temperature == "15")
+con30 <- subset(conjunctus, conjunctus$temperature == "30")
+conR1 <- mean(con15$VCO2_raw)
+conR2 <- mean(con30$VCO2_raw)
+conQ10 <- (conR2/conR1)^(10/15)
+
+vir15 <- subset(virgulatus, virgulatus$temperature == "15")
+vir30 <- subset(virgulatus, virgulatus$temperature == "30")
+vR1 <- mean(vir15$VCO2_raw)
+vR2 <- mean(vir30$VCO2_raw)
+vQ10 <- (vR2/vR1)^(10/15)
+
+Q10s <- c(vQ10, conQ10, hQ10, cQ10, pQ10, gQ10)
+
+spnames <- c("virgulatus", "conjunctus", "hallani", "clypeatus", "pugillis", "geronimoi")
+spcols <- c("green", "pink", "purple", "red", "blue", "orange")
+
+par(mfrow=c(1,1))
+plot(Q10s, axes = FALSE, ylim = c(1.5,2.5), ylab = "Q10 Value", xlab = "", pch =21, bg =spcols, cex =2)
+axis(side=1,at=c(1, 2, 3, 4, 5, 6),labels=spnames)
+axis(side =2,at=c(1.5, 2.0, 2.5))
+box()
+

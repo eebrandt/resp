@@ -34,18 +34,16 @@ def vco2_calc(trial_array, specimen_array, csvpath):
 	#creates an array to hold the sample data
 	vco2 = np.zeros((10, samples), dtype=float)
 	#extracts the date from the .csv file name
-	name = csv[:-4]
+	name = samplefile[:-4]
 	name = name.replace("-", "/")
 	namearray = name.split("_")
-	#print trial_array
-	print namearray
+	print namearray[0] +"_"+ namearray[1]
 	#subsets the trial data array by date
 	trial_date = trial_array[trial_array["date"] == str(namearray[2])]
 	#subsets the trial data array by subgroup (2 subgroups for each day, so need to distinguish)
 	#TODO: initiate the array with this column as a string, rather than integer
 	# subsets the trial data by "page section". This should mostly match up with subgroup, but sometimes other groups/subgroups are swapped in.
 	trial_subgroup = trial_date[trial_date["page section"].astype(str) == namearray[0][1]]
-	#print trial_subgroup
 	trial_subgroup = trial_subgroup[trial_subgroup["syringe"].argsort()]
 	
 	# number of peaks, determines based on the number of rows in the subsetted trial array
@@ -97,7 +95,6 @@ def vco2_calc(trial_array, specimen_array, csvpath):
 	# this section corrects for "bad" data. Bad data points can either be listed in the trial data but not have a peak associated with them, or have a peak that should be discounted. This is handled by masking (applying a boolean array) to both the trial data and the peaks data and then skipping anything that is masked out later
 	
 	badcount = 0
-	#print trial_subgroup
 	#creates masking array for trial data. Default is "False", which means the value is not masked
 	badcount_trial_delete = np.zeros((1, trial_subgroup.shape[0]), dtype=bool)
 	badcount_trial_delete = np.transpose(badcount_trial_delete)
@@ -121,9 +118,7 @@ def vco2_calc(trial_array, specimen_array, csvpath):
 		badcount = badcount + 1
 	#applies the masking arrays to trial and peak data, respectively
 	trialmask = ma.masked_array(trial_subgroup, mask=badcount_trial_delete)
-	#print trialmask
 	peakmask = ma.masked_array(peaks, mask = badcount_peaks_delete)
-	#print peakmask
 
 	#loops through each peak, including blank this time
 	i = 0
@@ -164,7 +159,7 @@ def vco2_calc(trial_array, specimen_array, csvpath):
 	while i < peakmask.shape[0]-1:
 			#again, makes sure that the given entry isn't masked
 		if (peakmask[i][0] is not ma.masked) and (trialmask[i][0] is not ma.masked):
-			sample_output=[]
+			sample_output=np.zeros((24),dtype = "S25")
 			#do blank correction 
 			blank = areas[2,-1]
 			areas[3,i] = areas[2,i] - blank
@@ -173,98 +168,92 @@ def vco2_calc(trial_array, specimen_array, csvpath):
 			# adding data to the array that will be written to the csv file eventually.
 			#animal ID
 			individual = trialmask[i]["individual"]
-			#print individual
 			ind_index = np.where(specimen_array["ID"] == individual)
-			#print specimen_array[:][0]
-			#print ind_index
 			ind_info = specimen_array[ind_index]
-			sample_output.append(trialmask[i]["individual"])
+			sample_output[0] = (trialmask[i]["individual"])
 			#date
-			sample_output.append(trialmask[i]["date"])
+			sample_output[1] = (trialmask[i]["date"])
 			#temperature
-			sample_output.append(trialmask[i]["temp"])
+			sample_output[2] = (trialmask[i]["temp"])
 			#date fed
-			sample_output.append(trialmask[i]["fed"])
+			sample_output[3] = (trialmask[i]["fed"])
 			#group
-			sample_output.append(trialmask[i]["group"])
+			sample_output[4] = (trialmask[i]["group"])
 			#subgroup
-			sample_output.append(trialmask[i]["subgroup"])
+			sample_output[5] = (trialmask[i]["subgroup"])
 			#genus
 			genus = str(ind_info["genus"]).replace("['", "")
 			genus = genus.replace("']", "")
-			sample_output.append(genus)
-			#print ind_info["ID"]
+			sample_output[6] = (genus)
 			#species
 			species = str(ind_info["species"]).replace("['", "")
 			species = species.replace("']", "")
-			sample_output.append(species)
+			sample_output[7] = (species)
 			#sex
 			sex = str(ind_info["sex"]).replace("['", "")
 			sex = sex.replace("']", "")
-			sample_output.append(sex)
+			sample_output[8] = (sex)
 			#purge time
-			sample_output.append(trialmask[i]["T0"])
+			sample_output[9] = (trialmask[i]["T0"])
 			#read time
-			sample_output.append(trialmask[i]["T1"])
+			sample_output[10] = (trialmask[i]["T1"])
 			# minutes total
-			sample_output.append(times[0,i])
+			sample_output[11] = (times[0,i])
 			# volume injected
-			sample_output.append(float(trialmask[i]["Volume Injected"]))
+			sample_output[12] = (float(trialmask[i]["Volume Injected"]))
 			# total volume
-			sample_output.append(float(trialmask[i]["Total Volume"]))
+			sample_output[13] = (float(trialmask[i]["Total Volume"]))
 			#blank injected
-			sample_output.append(float(trialmask[-1]["Volume Injected"]))
+			sample_output[14] = (float(trialmask[-1]["Volume Injected"]))
 			#blank total
-			sample_output.append(float(trialmask[-1]["Total Volume"]))
+			sample_output[15] = (float(trialmask[-1]["Total Volume"]))
 			#flow rate
-			sample_output.append(flowrate)
+			sample_output[16] = (flowrate)
 			#weight
-			sample_output.append(round(trialmask[i]["Weight (mg)"],3))
+			sample_output[17] = (round(trialmask[i]["Weight (mg)"],3))
 			#vco2 without weight correction
-			sample_output.append(areas[3,i])
+			sample_output[18] = (areas[3,i])
 			#vco2 with weight correction
-			sample_output.append(areas[4,i])
+			sample_output[19] = (areas[4,i])
 			#whether specimen is repeated measures (completed all trials) or not
 			complete = str(ind_info["completed"]).replace("['", "")
 			complete = complete.replace("']", "")
-			sample_output.append(complete)
+			sample_output[20] = (complete)
 			#Was this sample analyzed by hand? No, because we used this program.
-			sample_output.append("no")
+			sample_output[21] = ("no")
 			#comments from trial sheets
-			sample_output.append(trialmask[i]["comments"])
+			sample_output[22] = (trialmask[i]["comments"])
 			#comments from specimen sheet
-			sample_output.append(specimen_array[i]["comments"])
-			#print sample_output
+			sample_output[23] = (specimen_array[i]["comments"])
 			#write data to .csv
-			writer.writerow(sample_output)
+			sample_output.transpose()
+			addindex = len(writearray[writearray[:,0] != ""])
+			writearray[addindex]=sample_output
 			i = i + 1
 		else:
 			i = i + 1
 
+#header for complete data file
 complete_output_header = ["individual", "date", "temperature", "date_fed", "group", "subgroup" , "genus", "species", "sex", "TI0", "TI1", "minutes_total", "vol_injected", "vol_total", "blank_injected", "blank_total", "flow rate (mL/min)", "weight (mg)", "VCO2_raw", "VCO2_corrected","complete", "by hand", "trial comments", "specimen comments"]
 
 #read in file that contains information about each individual
-specimen_file = tkFileDialog.askopenfilename(initialdir= "/home/eebrandt/projects/dissertation/uncategorized/physiology/data/", title = "Choose the file that contains specimen info.")
+specimen_file = tkFileDialog.askopenfilename(initialdir= "/home/eebrandt/projects/dissertation/uncategorized/physiology/respirometry/data/", title = "Choose the file that contains specimen info.")
 specimen_array = np.recfromcsv(specimen_file, delimiter=',', case_sensitive=True, deletechars='', replace_space=' ')
 
 #read in trial file, contains data collected at time of trial
-trial_file = tkFileDialog.askopenfilename(initialdir= "/home/eebrandt/projects/dissertation/uncategorized/physiology/data/", title = "Choose the file that contains trial info.")
+trial_file = tkFileDialog.askopenfilename(initialdir= "/home/eebrandt/projects/dissertation/uncategorized/physiology/respirometry/data/", title = "Choose the file that contains trial info.")
 trial_array = np.recfromcsv(trial_file, delimiter=',', case_sensitive=True, deletechars='', replace_space=' ')
+writearray = np.empty(shape=[len(trial_array), 24], dtype = "S25")
 
 byhand =  tkMessageBox.askyesno("By Hand Analysis", "Do you want to include a file of analysis done with Expedata?")
 
 if byhand:
 	#reads in file that contains any analysis done by hand (through expedata)
-	byhand_file = tkFileDialog.askopenfilename(initialdir= "/home/eebrandt/projects/dissertation/uncategorized/physiology/data/", title = 		"Choose the file that contains analysis done by hand.")
-	kwargs = dict(delimiter=",",
-             missing_values={22:False, 23:False},
-             filling_values={22:"", 23:""})
-	byhand_array = np.recfromcsv(byhand_file, **kwargs)
-	#print byhand_array
-	#byhand_array = np.recfromcsv(byhand_file, delimiter=',', case_sensitive=True, deletechars='', replace_space=' ')
+	byhand_file = tkFileDialog.askopenfilename(initialdir= "/home/eebrandt/projects/dissertation/uncategorized/physiology/respirometry/data/", title = 		"Choose the file that contains analysis done by hand.")
+	byhand_array = np.recfromcsv(byhand_file, delimiter = ',')
 
 #get directory that contains data files
-data_folder = tkFileDialog.askdirectory(initialdir= "/home/eebrandt/projects/dissertation/uncategorized/physiology/data/", title = "Choose the folder that contains data files.")
+data_folder = tkFileDialog.askdirectory(initialdir= "/home/eebrandt/projects/dissertation/uncategorized/physiology/respirometry/data/", title = "Choose the folder that contains data files.")
 
 # Defines and opens a .csv file that we'll write our data to
 fl = open(data_folder + "/" + "vco2_data" + "_" + timestamp + '.csv', 'w')
@@ -275,7 +264,6 @@ writer.writerow(complete_output_header)
 #get names of all sub-directories
 # looks in each individual folder for trial folders
 groups =  os.listdir(data_folder)
-#print groups
 for group in groups:
 	# make sure each "individual" is a folder
 	if os.path.isdir(data_folder + "/" + group):
@@ -284,17 +272,87 @@ for group in groups:
 		for subgroup in subgroups:
 			# defines the folders that we'll be looking in for csvs.
 			subgroup_folder = data_folder + "/" + group + "/" + subgroup + "/auto_csvs"
-			#print subgroup_folder
 				# looks for all the csvs. in a subgroup folder
-			csvs = find_csv_filenames(subgroup_folder, suffix = ".csv")
-			#print csvs
-			for csv in csvs:
+			samplefiles = find_csv_filenames(subgroup_folder, suffix = ".csv")
+			for samplefile in samplefiles:
 				#run analysis function
-				#print trial_array
-				vco2_calc(trial_array, specimen_array, data_folder +"/"+group+"/"+subgroup+"/auto_csvs/"+csv)
+				vco2_calc(trial_array, specimen_array, data_folder +"/"+group+"/"+subgroup+"/auto_csvs/"+samplefile)
+
+#adds any byhand data. Writes line by line to writearray
+i = 0
+byhand_size = byhand_array.size
 if byhand:
-	writer.writerows(byhand_array)
+	addindex = len(writearray[writearray[:,0] != ""])
+	while i < byhand_size:
+		j = 0
+		while j < 22:
+			writearray[addindex+i][j] = byhand_array[i][j]
+			j = j +1
+		i = i + 1
 	print "Manual analysis file appended."
 print "Done."
-#close .csv file that has been written				
+
+#writes complete data file
+writer.writerows(writearray)	
+#close .csv file that has been written			
 fl.close() 
+
+#make file that has separate line for each individual
+#header for compiled file
+compiled_output_header = ["ID", "species", "sex", "weight", "10_raw", "10_weight", "15_raw", "15_weight", "20_raw", "20_weight", "25_raw", "25_weight", "30_raw", "30_weight", "35_raw", "35_weight", "40_raw", "40_weight"]
+
+# Defines and opens a .csv file that we'll write our data to for compiled file
+comp = open(data_folder + "/" + "vco2_data_compiled" + "_" + timestamp + '.csv', 'w')
+write = csv.writer(comp)
+
+# writes header to csv file
+write.writerow(compiled_output_header)
+
+#generates list of individuals, since we're making a file with one row per individual
+IDs = writearray[:,0]
+#removes any rows that are empty
+IDs = IDs[IDs != ""]
+#removes any duplicates in list
+IDs =  list(set(IDs))
+
+#list of temperatures that we're going to loop through
+temps = ["10", "15", "20", "25", "30", "35", "40"]
+
+#for each individual
+for ID in IDs:
+	#array to hold all info for the row of the file
+	compiled = np.empty((18), dtype = "S25")
+	#subsets writearray for a given individual
+	indsubset = writearray[writearray[:,0] == ID]
+	#writes ID, sex, species, and weight. Weight is calculated as average across all treatments
+	compiled[0] = ID
+	compiled[1] = indsubset[0][7]
+	compiled[2] = indsubset[0][8]
+	weights = indsubset[:,17]
+	weights = weights.astype(np.float)
+	compiled[3] = np.mean(weights)
+	#loops through all of the temperatures for a given individual
+	for temp in temps:
+		#calculates appropriate place in output array based on temperature
+		tempint = int(temp)/5*2
+		#subsets individual array based on temperature
+		subset_temp = indsubset[indsubset[:,2] == temp]
+		#if there's no data for a given temperature, write raw and weight-corrected data as empty
+		if subset_temp.shape[0] <1:
+			compiled[tempint] = ""
+			compiled[tempint+1] = ""
+		#if there's more than one entry for a given temperature, average them
+		elif subset_temp.shape[0] > 1:
+			values = subset_temp[:,18].astype(np.float)
+			compiled[tempint] = np.mean(values)
+			values_corr = subset_temp[:,19].astype(np.float)
+			compiled[tempint+1] = np.mean(values_corr)
+		#if there's one entry for a given temperature, write that to the output array
+		else:
+			compiled[tempint] = subset_temp[0,18]
+			compiled[tempint+1] = subset_temp[0,19]
+	#write output array to .csv
+	write.writerow(compiled)
+
+#close .csv file
+comp.close()	
